@@ -25,7 +25,7 @@ public class TestLogin {
 	@Test
 	public void successfulLoginMessageShouldAppear(){
 		driver.findElement(By.id("login")).click();
-		driver.findElement(By.id("email")).sendKeys("admin14@gmail.com");
+		driver.findElement(By.id("email")).sendKeys("admin1@gmail.com");
 		driver.findElement(By.id("password")).sendKeys("admin1");
 		driver.findElement(By.id("btn-submit")).click();
 		
@@ -36,9 +36,49 @@ public class TestLogin {
 	
 	@Test
 	public void createPostShouldBeAvailable(){
-		driver.findElement(By.id("blog")).click();
+		driver.findElement(By.id("login")).click();
+		driver.findElement(By.id("email")).sendKeys("admin1@gmail.com");
+		driver.findElement(By.id("password")).sendKeys("admin1");
+		driver.findElement(By.id("btn-submit")).click();
+		driver.findElement(By.id("create_post")).click();
 		String currentUrl = driver.getCurrentUrl();
 		assertTrue(currentUrl.contains("/entries/create/"));
+	}
+	
+	@Test
+	public void wrongEmailLoginMessageShouldAppear(){
+		driver.findElement(By.id("login")).click();
+		driver.findElement(By.id("email")).sendKeys("admin14@gmail.com");
+		driver.findElement(By.id("password")).sendKeys("admin1");
+		driver.findElement(By.id("btn-submit")).click();
+		
+		String expectedMessage = "Invalid email or password.";
+		String currentMessage = driver.findElement(By.xpath("//*[@id=\"content_title\"]/form/div[1]/div/span[2]")).getText();
+		assertEquals(expectedMessage, currentMessage);
+	}
+	
+	@Test
+	public void emptyEmailLoginMessageShouldAppear(){
+		driver.findElement(By.id("login")).click();
+		driver.findElement(By.id("email")).sendKeys("");
+		driver.findElement(By.id("password")).sendKeys("admin1");
+		driver.findElement(By.id("btn-submit")).click();
+		
+		String expectedMessage = "This field is required.";
+		String currentMessage = driver.findElement(By.xpath("//*[@id=\"content_title\"]/form/div[1]/div/span[2]")).getText();
+		assertEquals(expectedMessage, currentMessage);
+	}
+	
+	@Test
+	public void emptyPassLoginMessageShouldAppear(){
+		driver.findElement(By.id("login")).click();
+		driver.findElement(By.id("email")).sendKeys("admin14@gmail.com");
+		driver.findElement(By.id("password")).sendKeys("");
+		driver.findElement(By.id("btn-submit")).click();
+		
+		String expectedMessage = "This field is required.";
+		String currentMessage = driver.findElement(By.xpath("//*[@id=\"content_title\"]/form/div[2]/div/span[2]")).getText();
+		assertEquals(expectedMessage, currentMessage);
 	}
 	
 	@After
