@@ -14,26 +14,39 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.effectivetesting.pageobject.EntryPageObject;
-import com.effectivetesting.pageobject.HomePageObject;
+import com.effectivetesting.pageobject.AdminHomePageObject;
 import com.effectivetesting.pageobject.LoginPageObject;
 
 public class TestCreateEntry {
 	private WebDriver driver;
 	private LoginPageObject loginPage;
+	private AdminHomePageObject adminPage;
 	
 	@Test
 	public void postIsSuccessfull() {
 		loginPage = new LoginPageObject(driver);
-		HomePageObject homePage = loginPage.login("admin1@gmail.com", "admin1");
-		
-		EntryPageObject entryPage = homePage.goToCreateEntry();
-		entryPage.createEntry("My newest post", "This is a post.");
-		
-		String currentMessage = entryPage.getResultMessage();
-		System.out.println(currentMessage);
+
+		String currentMessage = loginPage
+									.login("admin1@gmail.com", "admin1")
+									.goToCreateEntry()
+									.createEntry("My newest post", "this is my body")
+									.getResultMessage();
+								
 		
 		assertTrue(currentMessage.contains("Entry 'My newest post' created successfully."));
+	}
+	
+	@Test
+	public void textRequired(){
+		loginPage = new LoginPageObject(driver);
+		
+		String currentMessage = loginPage
+									.login("admin1@gmail.com", "admin1")
+									.goToCreateEntry()
+									.createEntry("", "this is my body")
+									.getTextErrorMessage();
+		
+		assertTrue(currentMessage.contains("This field is required."));
 	}
 	
 	@Before
@@ -46,17 +59,13 @@ public class TestCreateEntry {
 
 	@After
 	public void teardDown() {
-		driver.get("http://localhost:5000/admin/entry/");
-		driver.findElement(By.xpath("/html/body/div/table/tbody/tr/td[2]/form")).click();
+		driver.get("localhost:5000/admin/");
+		adminPage = new AdminHomePageObject(driver);
 		
-	    WebDriverWait wait = new WebDriverWait(driver, 10);
-	    Alert alert = wait.until(ExpectedConditions.alertIsPresent());
-		   
-	    alert.accept();
-	    
-	    WebDriverWait waitForMessage = new WebDriverWait(driver, 10);
-	    waitForMessage.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/div/div[2]")));
-	    
+		adminPage
+			.goToEntrySection()
+			.getButtonDelete();
+		
 	    driver.quit();
 	}
 }
