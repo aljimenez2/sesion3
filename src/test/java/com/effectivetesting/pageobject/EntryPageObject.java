@@ -20,4 +20,8 @@ public class EntryPageObject {
 	public String getResultMessage() {
 		return driver.findElement(By.xpath("/html/body/div[2]/div[1]/div[1]/div/span")).getText();
 	}
+	
+	public String getTextErrorMessage() {
+		return driver.findElement(By.xpath("//*[@id=\"create_post\"]/div[1]/div/span[2]")).getText();
+	}
 }

@@ -36,6 +36,20 @@ public class TestCreateEntry {
 		assertTrue(currentMessage.contains("Entry 'My newest post' created successfully."));
 	}
 	
+	@Test
+	public void textRequired(){
+		loginPage = new LoginPageObject(driver);
+		HomePageObject homePage = loginPage.login("admin1@gmail.com", "admin1");
+		
+		EntryPageObject entryPage = homePage.goToCreateEntry();
+		entryPage.createEntry("", "This is a post.");
+		
+		String currentMessage = entryPage.getTextErrorMessage();
+		System.out.println(currentMessage);
+		
+		assertTrue(currentMessage.contains("This field is required."));
+	}
+	
 	@Before
 	public void setUp() {
 		System.setProperty("webdriver.chrome.driver", "C:\\ChromeDriver\\chromedriver.exe");
@@ -47,16 +61,17 @@ public class TestCreateEntry {
 	@After
 	public void teardDown() {
 		driver.get("http://localhost:5000/admin/entry/");
-		driver.findElement(By.xpath("/html/body/div/table/tbody/tr/td[2]/form")).click();
-		
-	    WebDriverWait wait = new WebDriverWait(driver, 10);
-	    Alert alert = wait.until(ExpectedConditions.alertIsPresent());
-		   
-	    alert.accept();
-	    
-	    WebDriverWait waitForMessage = new WebDriverWait(driver, 10);
-	    waitForMessage.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/div/div[2]")));
-	    
+		if(driver.findElements(By.xpath("/html/body/div/table/tbody/tr/td[2]/form")).size() != 0){
+			driver.findElement(By.xpath("/html/body/div/table/tbody/tr/td[2]/form")).click();
+			
+		    WebDriverWait wait = new WebDriverWait(driver, 10);
+		    Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+			   
+		    alert.accept();
+		    
+		    WebDriverWait waitForMessage = new WebDriverWait(driver, 10);
+		    waitForMessage.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/div/div[2]")));
+		}
 	    driver.quit();
 	}
 }
