@@ -5,6 +5,7 @@ public class User {
 	private String email;
 	private String password_hash;
 	private String name;
+	private boolean admin;
 	
 	public String getId() {
 		return id;
@@ -36,6 +37,14 @@ public class User {
 	
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public void setAdmin(boolean admin){
+		this.admin = admin;
+	}
+	
+	public boolean getAdmin(){
+		return this.admin;
 	}
 
 }

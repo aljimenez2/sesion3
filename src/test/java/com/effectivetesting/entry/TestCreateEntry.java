@@ -1,6 +1,7 @@
 package com.effectivetesting.entry;
 
 import static org.junit.Assert.assertTrue;
+import static io.restassured.RestAssured.*;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,30 +15,46 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.effectivetesting.entities.User;
+import com.effectivetesting.helper.UserHelper;
 import com.effectivetesting.pageobject.LoginPageObject;
 
 public class TestCreateEntry {
+
+	static UserHelper userHelper = new UserHelper();
+	User user;
 	private WebDriver driver;
+	private static final String DEFAULT_BASE_URL = "http://localhost:5000/api";
+	private static final String ID = userHelper.getId();
 	private LoginPageObject loginPage;
+
+	@Before
+	public void setUp() {
+		user = userHelper.createTestUser();
+		given()
+			.contentType("application/json")
+			.body(userHelper.createTestUser())
+		.when()
+			.post(DEFAULT_BASE_URL + "/user");
+		System.setProperty("webdriver.chrome.driver", "C:\\ChromeDriver\\chromedriver.exe");
+		driver = new ChromeDriver();
+		driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+		driver.get("localhost:5000");
+	}
 	
 	@Test
 	public void postIsSuccessfull() {
 		loginPage = new LoginPageObject(driver);
+		String mail = user.getEmail();
+		String pass = user.getpassword_hash();
 		String currentMessage = loginPage
-				.login("admin1@gmail.com", "admin1")
+				.login(mail, pass)
 				.goToCreateEntry()
 				.createEntry("My newest post", "This is a post.")
 				.getResultMessage();
 		
 		assertTrue(currentMessage.contains("Entry 'My newest post' created successfully."));
-	}
-	
-	@Before
-	public void setUp() {
-		System.setProperty("webdriver.chrome.driver", "C:\\ChromeDriver\\chromedriver.exe");
-		driver = new ChromeDriver();
-		driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
-		driver.get("localhost:5000");
+		
 	}
 
 	@After
@@ -52,6 +69,8 @@ public class TestCreateEntry {
 	    
 	    WebDriverWait waitForMessage = new WebDriverWait(driver, 10);
 	    waitForMessage.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/div/div[2]")));
+	    
+	    delete(DEFAULT_BASE_URL + "/user/" + ID);
 	    
 	    driver.quit();
 	}

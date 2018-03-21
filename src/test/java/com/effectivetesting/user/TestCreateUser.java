@@ -6,6 +6,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import com.effectivetesting.entities.User;
+import com.effectivetesting.helper.UserHelper;
 
 public class TestCreateUser {
 	private static final String DEFAULT_BASE_URL = "http://localhost:5000/api";
@@ -13,11 +14,13 @@ public class TestCreateUser {
 	
 	@Test
 	public void postUser() {
-		User user = createTestUser();
+		//User user = createTestUser();
+		
+		UserHelper userHelper = new UserHelper();
 		
         given()
         	.contentType("application/json")
-        	.body(user)
+        	.body(userHelper)
         	
         .when()
     		.post(DEFAULT_BASE_URL + "/user")
@@ -30,17 +33,4 @@ public class TestCreateUser {
     public void tearDown() {
         delete(DEFAULT_BASE_URL + "/user/" + ID);
     }
-	
-	private User createTestUser() {
-
-		User user = new User();
-
-		user.setId(ID);
-		user.setEmail("userx@gmail.com");
-		user.setpassword_hash("userx");
-		user.setName("John Doe");
-		
-		return user;
-
-	}
 }
